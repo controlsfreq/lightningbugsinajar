@@ -21,18 +21,27 @@
  * }
  */
 
-#include <stdio.h>
+#define F_CPU 1000000UL
+
+#include <avr/io.h>
+#include <util/delay.h>
+
 #include "controller.h"
 
 
 int main( int argc, char *argv[] )
 {
-	char major_version = LBJ_MAJOR_VERSION;
-	char minor_version = LBJ_MINOR_VERSION;
-	char patch_version = LBJ_PATCH_VERSION;
+	//char major_version = LBJ_MAJOR_VERSION;
+	//char minor_version = LBJ_MINOR_VERSION;
+	//char patch_version = LBJ_PATCH_VERSION;
 	
-	printf( "hello\n" );
-	printf( "version: %d.%d.%d\n", major_version, minor_version, patch_version );
+	DDRB |= _BV(DDB3); 
+    
+    while(1) 
+    {
+        PORTB ^= _BV(PB3);
+        _delay_ms(500);
+    }
 
 	return 0;
 }
