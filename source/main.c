@@ -27,6 +27,7 @@
 #include <util/delay.h>
 
 #include "pin.h"
+#include "spi.h"
 #include "controller.h"
 
 
@@ -36,15 +37,46 @@ int main( int argc, char *argv[] )
 	//char minor_version = LBJ_MINOR_VERSION;
 	//char patch_version = LBJ_PATCH_VERSION;
 
-	pin_t led = { PIN_BANK_B, PIN_NUM_3, false };
+    spi_t spi = {
+        SPI_BAUD_1M,
+        {
+            PIN_BANK_B,
+            PIN_NUM_3,
+            true
+        },
+        {
+            PIN_BANK_B,
+            PIN_NUM_1,
+            false
+        },
+        {
+            PIN_BANK_B,
+            PIN_NUM_0,
+            false
+        },
+        {
+            PIN_BANK_B,
+            PIN_NUM_2,
+            false
+        }
+    };
 
-    (void)pin_set_mode( &led, PIN_MODE_OUTPUT );
+    (void)spi_init( &spi );
 
     while(1)
     {
-        (void)pin_assert( &led );
-        _delay_ms(300);
-        (void)pin_deassert( &led );
+        (void)spi_enable_cs( &spi );
+        (void)spi_write( &spi, 'l' );
+        (void)spi_disable_cs( &spi );
+        (void)spi_enable_cs( &spi );
+        (void)spi_write( &spi, 'i' );
+        (void)spi_disable_cs( &spi );
+        (void)spi_enable_cs( &spi );
+        (void)spi_write( &spi, 'a' );
+        (void)spi_disable_cs( &spi );
+        (void)spi_enable_cs( &spi );
+        (void)spi_write( &spi, 'm' );
+        (void)spi_disable_cs( &spi );
         _delay_ms(300);
     }
 
