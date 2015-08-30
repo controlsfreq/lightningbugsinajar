@@ -63,7 +63,7 @@ bool spi_init( spi_t * const spi )
         if( retval == true )
         {
             /* Three-wire mode, USI software clock */
-            USICR = (USIWM0) | (USICLK);
+            USICR = (1<<USIWM0) | (1<<USICLK);
         }
     }
 
@@ -99,7 +99,6 @@ bool spi_disable_cs( spi_t * const spi )
 bool spi_write_read( spi_t * const spi, char * const read_byte, const char write_byte )
 {
     bool retval = false;
-    //pin_t led = { PIN_BANK_B, PIN_NUM_3, false };
 
     if( (spi != NULL) &&
         (read_byte != NULL) )
@@ -118,6 +117,8 @@ bool spi_write_read( spi_t * const spi, char * const read_byte, const char write
         }
 
         *read_byte = USIDR;
+
+        retval = true;
     }
 
     return retval;

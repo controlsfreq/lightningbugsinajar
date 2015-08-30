@@ -28,11 +28,13 @@
 
 #include "pin.h"
 #include "spi.h"
+#include "tlc591x.h"
 #include "controller.h"
 
 
 int main( int argc, char *argv[] )
 {
+    uint8_t output = 0;
 	//char major_version = LBJ_MAJOR_VERSION;
 	//char minor_version = LBJ_MINOR_VERSION;
 	//char patch_version = LBJ_PATCH_VERSION;
@@ -61,23 +63,21 @@ int main( int argc, char *argv[] )
         }
     };
 
-    (void)spi_init( &spi );
+    tlc591x_t tlc = {
+        spi,
+        { PIN_BANK_B, PIN_NUM_4, false },
+        { PIN_BANK_B, PIN_NUM_3, true }
+    };
+
+    (void)tlc591x_init( &tlc );
+    (void)tlc591x_enable_output( &tlc );
 
     while(1)
     {
-        (void)spi_enable_cs( &spi );
-        (void)spi_write( &spi, 'l' );
-        (void)spi_disable_cs( &spi );
-        (void)spi_enable_cs( &spi );
-        (void)spi_write( &spi, 'i' );
-        (void)spi_disable_cs( &spi );
-        (void)spi_enable_cs( &spi );
-        (void)spi_write( &spi, 'a' );
-        (void)spi_disable_cs( &spi );
-        (void)spi_enable_cs( &spi );
-        (void)spi_write( &spi, 'm' );
-        (void)spi_disable_cs( &spi );
-        _delay_ms(300);
+        (void)tlc591x_write_values( &tlc, output );
+        output++;
+        output = output % 16;
+        _delay_ms(500);
     }
 
 	return 0;
