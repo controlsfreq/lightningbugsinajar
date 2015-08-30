@@ -30,11 +30,13 @@ TARGET = lbj.hex
 ### Source Files ###
 APP_SOURCES = $(SOURCE_DIR)/main.c \
               $(SOURCE_DIR)/pin_avr.c \
+              $(SOURCE_DIR)/spi_avr.c \
               $(SOURCE_DIR)/controller.c \
               $(SOURCE_DIR)/bsp.c
 
 APP_HEADERS = $(HEADER_DIR)/controller.h \
               $(HEADER_DIR)/pin.h \
+              $(HEADER_DIR)/spi.h \
               $(HEADER_DIR)/bsp.h
 
 APP_OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(APP_SOURCES:.c=.o)))
