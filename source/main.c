@@ -24,20 +24,34 @@
 #define F_CPU 1000000UL
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "pin.h"
 #include "spi.h"
 #include "tlc591x.h"
 #include "controller.h"
+#include "timer.h"
 
+volatile uint8_t g_timer_counter = 0;
+
+pin_t debug_pin = {
+    PIN_BANK_B,
+    PIN_NUM_3,
+    false
+};
 
 int main( int argc, char *argv[] )
 {
-    uint8_t output = 0;
 	//char major_version = LBJ_MAJOR_VERSION;
 	//char minor_version = LBJ_MINOR_VERSION;
 	//char patch_version = LBJ_PATCH_VERSION;
+
+    timer_t timer1 = {
+        TIMER_NUM_1,
+        TIMER_PRE_1024,
+        true
+    };
 
     spi_t spi = {
         SPI_BAUD_1M,
@@ -45,22 +59,22 @@ int main( int argc, char *argv[] )
             PIN_BANK_B,
             PIN_NUM_3,
             true
-        },
+        }, // SPI CS
         {
             PIN_BANK_B,
             PIN_NUM_1,
             false
-        },
+        }, // SPI MOSI
         {
             PIN_BANK_B,
             PIN_NUM_0,
             false
-        },
+        }, // SPI MISO
         {
             PIN_BANK_B,
             PIN_NUM_2,
             false
-        }
+        } // SPI SCLK
     };
 
     tlc591x_t tlc = {
@@ -69,16 +83,104 @@ int main( int argc, char *argv[] )
         { PIN_BANK_B, PIN_NUM_3, true }
     };
 
+    (void)timer_init( &timer1 );
+    (void)timer_set_compare( &timer1, 62 );
     (void)tlc591x_init( &tlc );
     (void)tlc591x_enable_output( &tlc );
 
+    sei();
+
+    (void)timer_enable_int( &timer1 );
+    (void)timer_start( &timer1 );
+
     while(1)
     {
-        (void)tlc591x_write_values( &tlc, output );
-        output++;
-        output = output % 16;
-        _delay_ms(500);
+        (void)tlc591x_write_values( &tlc, g_timer_counter );
     }
 
 	return 0;
+}
+
+ISR(TIM1_COMPA_vect)
+{
+    g_timer_counter++;
+    (void)pin_toggle( &debug_pin );
+}
+
+ISR(INT0_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(PCINT0_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(TIM1_OVF_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(TIM0_OVF_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(EE_RDY_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(ANA_COMP_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(ADC_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(TIM1_COMPB_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(TIM0_COMPA_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(TIM0_COMPB_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(WDT_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(USI_START_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
+}
+
+ISR(USI_OVF_vect)
+{
+    (void)pin_assert( &debug_pin );
+    while(1); /* Trap */
 }
