@@ -1,8 +1,8 @@
 /**
- * @file   controller.h
- * @brief  This file contains the declarations for the LED controller module.
+ * @file   ufprng.h
+ * @brief  This file contains the Ultra Fast PRNG declarations.
  * @author Liam Bucci <liam.bucci@gmail.com>
- * @date   2015-08-23
+ * @date   2015-09-24
  * @copyright
  * {
  *     Copyright 2015 Liam Bucci
@@ -21,8 +21,14 @@
  * }
  */
 
-#include <stdint.h>
-#include "tlc591x.h"
+typedef struct ufprng_s
+{
+    uint8_t x;
+    uint8_t a;
+    uint8_t b;
+    uint8_t c;
+} ufprng_t;
 
-bool controller_init( tlc591x_t * const tlc );
-bool controller_loop( void );
+void ufprng_seed( ufprng_t *ufprng,
+                  uint32_t seed );
+uint8_t ufprng_rand( ufprng_t *ufprng );
