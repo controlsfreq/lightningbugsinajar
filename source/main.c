@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
 
     timer_t timer1 = {
         TIMER_NUM_1,
-        TIMER_PRE_1024,
+        TIMER_PRE_8,
         true
     };
 
@@ -79,12 +79,12 @@ int main( int argc, char *argv[] )
 
     tlc591x_t tlc = {
         spi,
-        { PIN_BANK_B, PIN_NUM_4, false },
-        { PIN_BANK_B, PIN_NUM_3, true }
+        { PIN_BANK_B, PIN_NUM_0, true },
+        { PIN_BANK_B, PIN_NUM_4, false }
     };
 
     (void)timer_init( &timer1 );
-    (void)timer_set_compare( &timer1, 62 );
+    (void)timer_set_compare( &timer1, 125 );
     (void)tlc591x_init( &tlc );
     (void)tlc591x_enable_output( &tlc );
 
@@ -93,19 +93,13 @@ int main( int argc, char *argv[] )
     (void)timer_enable_int( &timer1 );
     (void)timer_start( &timer1 );
 
-    while(1)
-    {
-        (void)tlc591x_write_values( &tlc, g_timer_counter );
-    }
+    (void)controller_init( &tlc );
+    (void)controller_loop();
 
 	return 0;
 }
 
-ISR(TIM1_COMPA_vect)
-{
-    g_timer_counter++;
-    (void)pin_toggle( &debug_pin );
-}
+
 
 ISR(INT0_vect)
 {
